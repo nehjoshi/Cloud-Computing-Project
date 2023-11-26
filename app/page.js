@@ -1,95 +1,69 @@
+'use client';
 import Image from 'next/image'
 import styles from './page.module.css'
+import { useState } from 'react';
 
 export default function Home() {
+
+  const [zip, setZip] = useState()
+  const [age, setAge] = useState()
+  const [rooms, setRooms] = useState()
+  const [baths, setBaths] = useState()
+  const [garages, setGarages] = useState()
+  const [stories, setStories] = useState()
+  const [loading, setLoading] = useState(false)
+  const [price, setPrice] = useState()
+  const [location, setLocation] = useState()
+
+  const Submit = async () => {
+    setLoading(true)
+    const res = await fetch('http://localhost:3000/api', {
+      method: "POST",
+      body: JSON.stringify({
+        zip, age, rooms, baths, garages, stories
+      })
+    })
+    const { price, location } = await res.json()
+    setPrice(price)
+    setLoading(false)
+    setLocation(location)
+  }
+
   return (
     <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
+      <h1 className={styles.heading}>House Price Estimator Tool</h1>
+      <p className={styles.description}>Get an instant house price estimation. Fill out the following information.</p>
+      <div className={styles.row}>
+        <input onChange={e => setZip(e.target.value)} className={styles.textInput} type='text' placeholder='Zip Code'></input>
+        <input onChange={e => setAge(e.target.value)} className={styles.textInput} type='text' placeholder='House Age (in years)'></input>
+        <input onChange={e => setRooms(e.target.value)} className={styles.textInput} type='text' placeholder='Number of bedrooms'></input>
       </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
+      <div className={styles.row}>
+        <input onChange={e => setBaths(e.target.value)} className={styles.textInput} type='text' placeholder='Number of bathrooms'></input>
+        <input onChange={e => setGarages(e.target.value)} className={styles.textInput} type='text' placeholder='Number of garages'></input>
+        <input onChange={e => setStories(e.target.value)} className={styles.textInput} type='text' placeholder='Number of stories'></input>
       </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
+      <div className={styles.row}>
+        {!loading && <button onClick={Submit} className={styles.button}>Get Price </button>}
+        {loading && <div className={styles.ldsDualRing}></div>}
       </div>
+      {price &&
+        <div className={styles.overlay}>
+          <div className={styles.response}>
+            <h3>Your Property is valued at:</h3>
+            <h1 className={styles.price}>${price}.00</h1>
+            <p className={styles.desc}>Based on the following details:</p>
+            <div className={styles.attributesWrapper}>
+              <p className={styles.attributes}><b>Zip Code: </b>{zip}({location})</p>
+              <p className={styles.attributes}><b>House Age: </b>{age}</p>
+              <p className={styles.attributes}><b>Bedroom Count: </b>{rooms}</p>
+              <p className={styles.attributes}><b>Bathroom Count: </b>{baths}</p>
+              <p className={styles.attributes}><b>Garage Count: </b>{garages}</p>
+              <p className={styles.attributes}><b>Stories: </b>{stories}</p>
+            </div>
+          <div className={styles.closeButton} onClick={() => setPrice()}>Start Again</div>
+          </div>
+        </div>}
     </main>
   )
 }
