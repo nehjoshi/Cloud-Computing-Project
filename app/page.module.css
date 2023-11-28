@@ -119,3 +119,15 @@
 .closeButton {
   margin-top: 20px;
 }
+.queryInput {
+  height: 50px;
+  font-size: 1.4rem;
+  width: 60%;
+  padding: 5px 10px;
+  border: 4px solid rgb(119, 119, 255);
+  border-radius: 5px;
+}
+.queryInput:active, .queryInput:focus{
+  outline: none;
+ border-width: 5px;
+}

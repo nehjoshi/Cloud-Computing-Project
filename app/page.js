@@ -12,8 +12,10 @@ export default function Home() {
   const [garages, setGarages] = useState()
   const [stories, setStories] = useState()
   const [loading, setLoading] = useState(false)
+  const [loading2, setLoading2] = useState(false)
   const [price, setPrice] = useState()
   const [location, setLocation] = useState()
+  const [query, setQuery] = useState();
 
   const Submit = async () => {
     setLoading(true)
@@ -27,6 +29,19 @@ export default function Home() {
     setPrice(price)
     setLoading(false)
     setLocation(location)
+  }
+
+  const SubmitString = async () => {
+    setLoading2(true)
+    const res = await fetch('http://localhost:3000/api/string', {
+      method: "POST",
+      body: JSON.stringify({query})
+    })
+    const { price, location } = await res.json()
+    setPrice(price)
+    setLoading2(false)
+    setLocation(location)
+
   }
 
   return (
@@ -46,7 +61,13 @@ export default function Home() {
       <div className={styles.row}>
         {!loading && <button onClick={Submit} className={styles.button}>Get Price </button>}
         {loading && <div className={styles.ldsDualRing}></div>}
-      </div>
+      </div><br />
+        <h1 className={styles.description}>OR</h1><br />
+        <input placeholder='Enter your housing query here with the above information...' onChange={e => setQuery(e.target.value)} type='text' className={styles.queryInput}></input>
+        <div className={styles.row}>
+        {!loading2 && <button onClick={SubmitString} className={styles.button}>Get Price </button>}
+        {loading2 && <div className={styles.ldsDualRing}></div>}
+      </div><br />
       {price &&
         <div className={styles.overlay}>
           <div className={styles.response}>

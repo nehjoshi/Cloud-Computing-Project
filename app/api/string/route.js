@@ -1,8 +1,19 @@
 export const POST = async (req, res) => {
     try {
-        const {zip, age, rooms, baths, garages, stories} = await req.json()
-        const response = await fetch(`http://api.openweathermap.org/geo/1.0/zip?zip=${zip},US&appid=${process.env.API_KEY}`)
-        const {lon, lat, name} = await response.json()
+        const {query} = await req.json()
+        console.log(query)
+        const response = await fetch(`${process.env.URL}/string`, {
+            method: "POST", 
+            headers: {
+                "content-type": "application/json"
+            },
+            body: JSON.stringify({
+                query
+            })
+        })
+        const {zip, age} = await response.json()
+        const response2 = await fetch(`http://api.openweathermap.org/geo/1.0/zip?zip=${zip},US&appid=${process.env.API_KEY}`)
+        const {lon, lat, name} = await response2.json()
         console.log(lon, lat)
         const post = await fetch(`${process.env.URL}`, {
             method: 'POST',
